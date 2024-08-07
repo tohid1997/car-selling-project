@@ -15,6 +15,17 @@
             transform: scale(1.05);
             transition: transform 0.2s;
         }
+        .card {
+            margin-bottom: 15px; /* Add margin to the bottom of each card */
+            height: 100%; /* Ensure cards are of equal height */
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -35,7 +46,7 @@
     </nav>
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
                 <div class="card bg-light-blue text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Section 1</h5>
@@ -43,7 +54,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
                 <div class="card bg-light-green text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Section 2</h5>
@@ -51,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
                 <div class="card bg-light-red text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Section 3</h5>
@@ -61,7 +72,7 @@
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <div class="card bg-light-purple text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Section 4</h5>
@@ -69,7 +80,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <div class="card bg-light-pink text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Section 5</h5>
