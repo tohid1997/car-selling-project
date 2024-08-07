@@ -13,6 +13,12 @@ conn = psycopg2.connect(
 )
 cursor = conn.cursor()
 
+@app.route('/')
+def route():
+    if 'loggedin' in session:
+        return render_template('home.html')
+    return redirect(url_for('login'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if 'loggedin' in session and session['username'] == 'tohid':
