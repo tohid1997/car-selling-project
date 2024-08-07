@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Info</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .bg-light-blue { background-color: #add8e6; }
+        .bg-light-green { background-color: #90ee90; }
+        .card:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+        .card {
+            margin-bottom: 15px; /* Add margin to the bottom of each card */
+            height: 100%; /* Ensure cards are of equal height */
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">First Info Page</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card bg-light-blue text-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">New Info</h5>
+                        <p class="card-text">Content for new info.</p>
+                        <a href="http://localhost:5000/first_info/new_info" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card bg-light-green text-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Update Old Info</h5>
+                        <p class="card-text">Content for update old info.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
