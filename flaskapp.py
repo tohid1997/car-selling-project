@@ -102,6 +102,29 @@ def first_info_new_info():
     return redirect(url_for('login'))
 
 
+@app.route('/first_info/search_complete')
+def index():
+    return render_template('search_complete.html')
+
+
+
+@app.route('/first_info/search_complete/search_result', methods=['GET', 'POST'])
+def search():
+    melli_code = request.form.get('melli_code')
+    rabet_phone = request.form.get('rabet_phone')
+
+    
+    if melli_code and rabet_phone:
+        cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s OR "Rabet_Phone" = %s""", (melli_code, rabet_phone))
+    elif melli_code:
+        cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s""", (melli_code,))
+    elif rabet_phone:
+        cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s""", (rabet_phone,))
+    
+    results = cursor.fetchall()
+    return render_template('search_results.html', results=results)
+
+
 
 
 if __name__ == '__main__':
