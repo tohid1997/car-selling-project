@@ -9,6 +9,11 @@
 <body>
     <div class="container">
         <h2 class="mt-5">Login</h2>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
         <form action="/login" method="POST">
             <div class="form-group">
                 <label for="username">Username:</label>

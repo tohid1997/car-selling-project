@@ -47,7 +47,9 @@ def login():
             session['username'] = user[1]
             return redirect(url_for('home'))
         else:
-            return "Incorrect username or password!"
+            error = "نام کاربری یا رمز عبور شما اشتباه است!"
+            return render_template('login.html', error = error)
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -89,9 +91,9 @@ def first_info_new_info():
                 """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password))
                 conn.commit()
                 flash('Data inserted successfully!', 'success')
-            except IntegrityError as e:
+            except IntegrityError:
                 conn.rollback()
-                flash(f"شماره درخواست تکراری است", 'danger')
+                flash("شماره درخواست تکراری است", 'danger')
             except Exception as e:
                 conn.rollback()
                 flash(f"An error occurred: {e}", 'danger')
