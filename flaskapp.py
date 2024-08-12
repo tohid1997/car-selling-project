@@ -124,6 +124,48 @@ def search():
     results = cursor.fetchall()
     return render_template('search_results.html', results=results)
 
+# @app.route('/first_info/search_complete/update_record', methods=['GET'])
+# def update_record():
+#     record_id = request.form.get('record_id')
+#     # Fetch the record details using the record_id
+#     cursor.execute("""SELECT * FROM "first_info" WHERE "first_info"."Darkhast_number" = %s""", (record_id,))
+#     record = cursor.fetchone()
+#     print(record)
+    
+#     # Render a template to show the record details and allow updates
+#     return render_template('update_record.html', record=record)
+
+@app.route('/first_info/search_complete/update_record', methods=['GET', 'POST'])
+def update_record():
+    record_id = request.form.get('record_id')
+    cursor.execute("""SELECT * FROM "first_info" WHERE "Darkhast_number" = %s""", (record_id,))
+    record = cursor.fetchone()
+    
+    return render_template('update_record.html', record=record)
+
+
+@app.route('/first_info/search_complete/save_update', methods=['POST'])
+def save_update():
+    record_id = request.form.get('record_id')
+    car_type = request.form.get('car_type')
+    rabet_name = request.form.get('rabet_name')
+    rabet_phone = request.form.get('rabet_phone')
+    mablagh_havaleh = request.form.get('mablagh_havaleh')
+    havale_city = request.form.get('havale_city')
+    havaleh_owner_name = request.form.get('havaleh_owner_name')
+    havaleh_owner_mellicode = request.form.get('havaleh_owner_mellicode')
+    sakha_password = request.form.get('sakha_password')
+
+    cursor.execute("""
+        UPDATE first_info
+        SET "Car_type" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s
+        WHERE "Darkhast_number" = %s
+    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, record_id))
+    conn.commit()
+
+    return redirect(url_for('first_info'))
+
+
 
 
 

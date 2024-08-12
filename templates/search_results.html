@@ -5,25 +5,79 @@
     <title>Results</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background: linear-gradient(to right, #ece9e6, #ffffff);
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         table, th, td {
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        h2 {
+            color: #333;
+        }
+        .update-form {
+            display: inline;
+        }
+        /* Responsive styling */
+        @media screen and (max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+            }
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%;
+                white-space: normal;
+                text-align: left;
+            }
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+            td:nth-of-type(1):before { content: "Car Type"; }
+            td:nth-of-type(2):before { content: "Darkhast Number"; }
+            td:nth-of-type(3):before { content: "Rabet Name"; }
+            td:nth-of-type(4):before { content: "Rabet Phone"; }
+            td:nth-of-type(5):before { content: "Mablagh Havaleh (toman)"; }
+            td:nth-of-type(6):before { content: "Havale City"; }
+            td:nth-of-type(7):before { content: "Havaleh Owner Name"; }
+            td:nth-of-type(8):before { content: "Havaleh Owner MelliCode"; }
+            td:nth-of-type(9):before { content: "Sakha Password"; }
+            td:nth-of-type(10):before { content: "Action"; }
         }
     </style>
 </head>
@@ -31,15 +85,16 @@
     <h2>Search Results</h2>
     <table>
         <tr>
-            <th>Car Type</th>
-            <th>Darkhast Number</th>
-            <th>Rabet Name</th>
-            <th>Rabet Phone</th>
-            <th>Mablagh Havaleh (toman)</th>
-            <th>Havale City</th>
-            <th>Havaleh Owner Name</th>
-            <th>Havaleh Owner MelliCode</th>
-            <th>Sakha Password</th>
+            <th>نوع خودرو</th>
+            <th>شماره درخواست</th>
+            <th>نام رابط</th>
+            <th>شماره رابط</th>
+            <th>مبلغ حواله</th>
+            <th>شهر حواله</th>
+            <th>نام صاحب حواله</th>
+            <th>کدملی صاحب حواله</th>
+            <th>رمز سخا</th>
+            <th>Action</th>
         </tr>
         {% for row in results %}
         <tr>
@@ -52,6 +107,12 @@
             <td>{{ row[6] }}</td>
             <td>{{ row[7] }}</td>
             <td>{{ row[8] }}</td>
+            <td>
+                <form class="update-form" action="{{ url_for('update_record') }}" method="post">
+                    <input type="hidden" name="record_id" value="{{ row[1] }}">
+                    <button type="submit">Update</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>
