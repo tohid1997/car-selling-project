@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import psycopg2
 from psycopg2 import OperationalError, IntegrityError
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -84,11 +85,16 @@ def first_info_new_info():
                 havaleh_owner_name = request.form['havaleh_owner_name']
                 havaleh_owner_mellicode = request.form['havaleh_owner_mellicode']
                 sakha_password = request.form['sakha_password']
-                
+                current_timestamp = datetime.now(timezone.utc)
+
+                if mablagh_havaleh == '':
+                    mablagh_havaleh = None
+
+                    
                 cursor.execute("""
-                    INSERT INTO first_info ("Car_type", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password")
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password))
+                    INSERT INTO first_info ("Car_type", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date")
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s , %s)
+                """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp))
                 conn.commit()
                 flash('Data inserted successfully!', 'success')
             except IntegrityError:
@@ -124,21 +130,14 @@ def search():
     results = cursor.fetchall()
     return render_template('search_results.html', results=results)
 
-# @app.route('/first_info/search_complete/update_record', methods=['GET'])
-# def update_record():
-#     record_id = request.form.get('record_id')
-#     # Fetch the record details using the record_id
-#     cursor.execute("""SELECT * FROM "first_info" WHERE "first_info"."Darkhast_number" = %s""", (record_id,))
-#     record = cursor.fetchone()
-#     print(record)
-    
-#     # Render a template to show the record details and allow updates
-#     return render_template('update_record.html', record=record)
+
 
 @app.route('/first_info/search_complete/update_record', methods=['GET', 'POST'])
 def update_record():
-    record_id = request.form.get('record_id')
-    cursor.execute("""SELECT * FROM "first_info" WHERE "Darkhast_number" = %s""", (record_id,))
+    Rabet_Phone = request.form.get('Rabet_Phone')
+    Havaleh_Owner_MelliCode = request.form.get('Havaleh_Owner_MelliCode')
+
+    cursor.execute("""SELECT * FROM "first_info" WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s""", (Rabet_Phone, Havaleh_Owner_MelliCode))
     record = cursor.fetchone()
     
     return render_template('update_record.html', record=record)
@@ -156,11 +155,14 @@ def save_update():
     havaleh_owner_mellicode = request.form.get('havaleh_owner_mellicode')
     sakha_password = request.form.get('sakha_password')
 
+    if mablagh_havaleh == '':
+        mablagh_havaleh = None
+
     cursor.execute("""
         UPDATE first_info
         SET "Car_type" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s
-        WHERE "Darkhast_number" = %s
-    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, record_id))
+        WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s 
+    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, rabet_phone, havaleh_owner_mellicode))
     conn.commit()
 
     return redirect(url_for('first_info'))
