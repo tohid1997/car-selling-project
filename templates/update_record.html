@@ -62,8 +62,16 @@
                 <input type="text" id="rabet_phone" name="rabet_phone" class="form-control" value="{{ record[3] }}">
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="mablagh_havaleh">مبلغ حواله(تومان)</label>
+                <label for="mablagh_havaleh">قیمت حواله(تومان)</label>
                 <input type="number" id="mablagh_havaleh" name="mablagh_havaleh" class="form-control" value="{{ record[4] }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="mablagh_havaleh">مبلغ واریزی(تومان)</label>
+                <input type="number" id="mablagh_havaleh" name="variz_mablagh" class="form-control" value="{{ record[10] }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="mablagh_havaleh">مبلغ کل(تومان)</label>
+                <input type="number" id="mablagh_havaleh" name="final_mablagh" class="form-control" value="{{ record[11] }}" readonly>
             </div>
             <div class="form-group" style="text-align: center;">
                 <label for="havale_city">شهر حواله</label>

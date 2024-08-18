@@ -86,15 +86,24 @@ def first_info_new_info():
                 havaleh_owner_mellicode = request.form['havaleh_owner_mellicode']
                 sakha_password = request.form['sakha_password']
                 current_timestamp = datetime.now(timezone.utc)
+                variz_mablagh = request.form['variz_mablagh']
 
                 if mablagh_havaleh == '':
                     mablagh_havaleh = None
+                if variz_mablagh == '':
+                    variz_mablagh = None
+                
+
+                Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
+
+                if Final_mablagh == '':
+                    Final_mablagh = None
 
                     
                 cursor.execute("""
-                    INSERT INTO first_info ("Car_type", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date")
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s , %s)
-                """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp))
+                    INSERT INTO first_info ("Car_type", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date", "variz_mablagh", "final_mablagh")
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s)
+                """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp, variz_mablagh, Final_mablagh))
                 conn.commit()
                 flash('Data inserted successfully!', 'success')
             except IntegrityError:
@@ -154,15 +163,25 @@ def save_update():
     havaleh_owner_name = request.form.get('havaleh_owner_name')
     havaleh_owner_mellicode = request.form.get('havaleh_owner_mellicode')
     sakha_password = request.form.get('sakha_password')
+    variz_mablagh = request.form.get('variz_mablagh')
+
+    if variz_mablagh == '':
+        variz_mablagh = None
 
     if mablagh_havaleh == '':
         mablagh_havaleh = None
 
+    Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
+
+    if Final_mablagh == '':
+        Final_mablagh = None
+
+
     cursor.execute("""
         UPDATE first_info
-        SET "Car_type" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s
+        SET "Car_type" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
         WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s 
-    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, rabet_phone, havaleh_owner_mellicode))
+    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
     conn.commit()
 
     return redirect(url_for('first_info'))
