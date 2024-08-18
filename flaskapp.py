@@ -154,7 +154,7 @@ def update_record():
 
 @app.route('/first_info/search_complete/save_update', methods=['POST'])
 def save_update():
-    record_id = request.form.get('record_id')
+    darkhast_number = request.form['darkhast_number']
     car_type = request.form.get('car_type')
     rabet_name = request.form.get('rabet_name')
     rabet_phone = request.form.get('rabet_phone')
@@ -179,9 +179,9 @@ def save_update():
 
     cursor.execute("""
         UPDATE first_info
-        SET "Car_type" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
+        SET "Car_type" = %s, "Darkhast_number" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
         WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s 
-    """, (car_type, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
+    """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
     conn.commit()
 
     return redirect(url_for('first_info'))
