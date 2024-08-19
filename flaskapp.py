@@ -2,9 +2,15 @@ from flask import Flask, request, render_template, redirect, url_for, session, f
 import psycopg2
 from psycopg2 import OperationalError, IntegrityError
 from datetime import datetime, timezone
+from werkzeug.utils import secure_filename
+import pandas as pd
+import os
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+app.config['UPLOAD_FOLDER'] = "C:\\Users\\mohaymen\\Desktop\\Flask_Proc\\uploads"
+
 
 # Database connection
 try:
@@ -135,6 +141,8 @@ def search():
         cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s""", (melli_code,))
     elif rabet_phone:
         cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s""", (rabet_phone,))
+    elif melli_code == '' and rabet_phone =='':
+        cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
     
     results = cursor.fetchall()
     return render_template('search_results.html', results=results)
@@ -166,15 +174,19 @@ def save_update():
     variz_mablagh = request.form.get('variz_mablagh')
 
     if variz_mablagh == '':
-        variz_mablagh = None
+        variz_mablagh = 0
 
     if mablagh_havaleh == '':
-        mablagh_havaleh = None
+        mablagh_havaleh = 0
 
-    Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
+    # if mablagh_havaleh == 0 and variz_mablagh == 0:
+    #     Final_mablagh == 0
+    # else:
+    #     Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
 
-    if Final_mablagh == '':
-        Final_mablagh = None
+
+    Final_mablagh = variz_mablagh + mablagh_havaleh
+
 
 
     cursor.execute("""
@@ -185,6 +197,35 @@ def save_update():
     conn.commit()
 
     return redirect(url_for('first_info'))
+
+@app.route('/upload_page')
+def update_page():
+    return render_template('upload_form.html')
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' in request.files:
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        # secure_filename = secure_filename(file.filename)
+        # Here you should save the file
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        cursor.execute("""INSERT INTO "asnad_files" ("filename") VALUES (%s)""", (filename,))
+        conn.commit()
+        
+        flash(f"File uploaded successfully", 'success')
+        return render_template('upload_form.html')
+
+    flash(f"No file uploaded", 'danger')
+    return render_template('upload_form.html')
+
+# def save_file_to_db(filename):
+
+#     cursor.execute("INSERT INTO files (filename) VALUES (%s)", (filename,))
+#     conn.commit()
+
+
 
 
 
