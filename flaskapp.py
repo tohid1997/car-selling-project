@@ -206,12 +206,16 @@ def update_page():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' in request.files:
+        Darkhast_Number = request.form['Darkhast_Number']
+        Paziresh_Number = request.form['Paziresh_Number']
         file = request.files['file']
+        file_extension = os.path.splitext(file.filename)[1]
         filename = secure_filename(file.filename)
+        filename = Darkhast_Number + '_green_page' + file_extension
         # secure_filename = secure_filename(file.filename)
         # Here you should save the file
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        cursor.execute("""INSERT INTO "asnad_files" ("filename") VALUES (%s)""", (filename,))
+        cursor.execute("""INSERT INTO "asnad_files" ("filename", "darkhast_number", "paziresh_number") VALUES (%s, %s, %s)""", (filename, Darkhast_Number, Paziresh_Number))
         conn.commit()
         
         flash(f"File uploaded successfully", 'success')
@@ -220,10 +224,6 @@ def upload_file():
     flash(f"No file uploaded", 'danger')
     return render_template('upload_form.html')
 
-# def save_file_to_db(filename):
-
-#     cursor.execute("INSERT INTO files (filename) VALUES (%s)", (filename,))
-#     conn.commit()
 
 
 
