@@ -3,54 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert New Record</title>
+    <title>Search</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
         }
-
         .navbar {
             background-color: #007bff;
         }
-
-        .navbar-brand,
-        .nav-link {
+        .navbar-brand, .nav-link {
             color: #fff !important;
         }
-
         .container {
             background-color: #fff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-
         .form-control {
             border-radius: 0.25rem;
         }
-
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
         }
-
         .btn-primary:hover {
             background-color: #0056b3;
             border-color: #0056b3;
         }
-
         .alert {
             border-radius: 0.25rem;
         }
     </style>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="#">Upload File</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#">Insert Documents</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -59,15 +50,11 @@
                     <a class="nav-link" href="http://localhost:5000/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('upload_document_search') }}">back</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </li>
             </ul>
         </div>
     </nav>
-
     <div class="container mt-5">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -83,22 +70,21 @@
         </div>
         {% endif %}
         {% endwith %}
-        <h2>Upload File</h2>
-            <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
-                <div class="form-group" style="text-align: center;">
-                    <label for="Darkhast_Number">Darkhast Number</label>
-                    <input type="text" class="form-control" style="text-align: center;" id="Darkhast_Number" name="Darkhast_number" value="{{ record[1] if record else '' }}" readonly>
+        <h2>جست و جو</h2>
+        <form action="/upload_document_search_complete" method="post" class="mt-4">
+            <div class="form-row justify-content-center">
+                <div class="col-md-6 mb-2">
+                    <input type="text" name="melli_code" class="form-control" placeholder="کد ملی صاحب حواله">
                 </div>
-                <div class="form-group" style="text-align: center;">
-                    <label for="Paziresh_Number">Paziresh Number</label>
-                    <input type="text" class="form-control" style="text-align: center;" id="Paziresh_Number" name="paziresh_number" value="{{ record[12] if record else '' }}" readonly>
+                <div class="col-md-6 mb-2">
+                    <input type="text" name="rabet_phone" class="form-control" placeholder="شماره تلفن رابط">
                 </div>
-                <div class="form-group">
-                    <label for="file">برگه سبز</label>
-                    <input type="file" class="form-control-file" id="file" name="file" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            </div>
+            <input type="submit" class="btn btn-primary mt-3" value="Search">
+        </form>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

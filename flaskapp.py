@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 import pandas as pd
 import os
+import time
 
 
 app = Flask(__name__)
@@ -93,6 +94,7 @@ def first_info_new_info():
                 sakha_password = request.form['sakha_password']
                 current_timestamp = datetime.now(timezone.utc)
                 variz_mablagh = request.form['variz_mablagh']
+                paziresh_number = request.form['paziresh_number']
 
                 if mablagh_havaleh == '':
                     mablagh_havaleh = None
@@ -107,9 +109,9 @@ def first_info_new_info():
 
                     
                 cursor.execute("""
-                    INSERT INTO first_info ("Car_type", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date", "variz_mablagh", "final_mablagh")
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s)
-                """, (car_type, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp, variz_mablagh, Final_mablagh))
+                    INSERT INTO first_info ("Car_type", "paziresh_number", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date", "variz_mablagh", "final_mablagh")
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s)
+                """, (car_type, paziresh_number, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp, variz_mablagh, Final_mablagh))
                 conn.commit()
                 flash('Data inserted successfully!', 'success')
             except IntegrityError:
@@ -185,7 +187,7 @@ def save_update():
     #     Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
 
 
-    Final_mablagh = variz_mablagh + mablagh_havaleh
+    Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
 
 
 
@@ -198,16 +200,53 @@ def save_update():
 
     return redirect(url_for('first_info'))
 
-@app.route('/upload_page')
+
+@app.route('/upload_document_search')
+def upload_document_search():
+    return render_template('upload_document_search.html')
+
+
+@app.route('/upload_document_search_complete', methods=['GET', 'POST'])
+def upload_document_search_complete():
+    melli_code = request.form.get('melli_code')
+    rabet_phone = request.form.get('rabet_phone')
+
+    
+    if melli_code and rabet_phone:
+        cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s OR "Rabet_Phone" = %s""", (melli_code, rabet_phone))
+    elif melli_code:
+        cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s""", (melli_code,))
+    elif rabet_phone:
+        cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s""", (rabet_phone,))
+    elif melli_code == '' and rabet_phone =='':
+        cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
+    
+    record = cursor.fetchall()
+    return render_template('upload_document_search_complete.html', record=record)
+
+@app.route('/upload_page', methods=['GET', 'POST'])
 def update_page():
-    return render_template('upload_form.html')
+    if request.method == 'POST':
+        Darkhast_number = request.form.get('Darkhast_number')
+        paziresh_number = request.form.get('paziresh_number')
+
+        cursor.execute("""SELECT * FROM "first_info" WHERE "Darkhast_number" = %s and "paziresh_number" = %s""", (Darkhast_number, paziresh_number))
+        record = cursor.fetchone()
+
+        if record:
+            return render_template('upload_form.html', record=record)
+        else:
+            flash('Record not found', 'danger')
+            return redirect(url_for('update_page'))
+    return render_template('upload_form.html', record=None)
 
 
-@app.route('/upload', methods=['POST'])
+
+@app.route('/upload', methods=['POST', 'get'])
 def upload_file():
     if 'file' in request.files:
-        Darkhast_Number = request.form['Darkhast_Number']
-        Paziresh_Number = request.form['Paziresh_Number']
+        Darkhast_Number = request.form['Darkhast_number']
+        Paziresh_Number = request.form['paziresh_number']
         file = request.files['file']
         file_extension = os.path.splitext(file.filename)[1]
         filename = secure_filename(file.filename)
@@ -219,10 +258,11 @@ def upload_file():
         conn.commit()
         
         flash(f"File uploaded successfully", 'success')
-        return render_template('upload_form.html')
+        return render_template('upload_document_search.html')
 
     flash(f"No file uploaded", 'danger')
     return render_template('upload_form.html')
+
 
 
 

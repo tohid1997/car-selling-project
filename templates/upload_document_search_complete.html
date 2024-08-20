@@ -49,7 +49,7 @@
                     <a class="nav-link" href="http://localhost:5000/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:5000/first_info/search_complete">back</a>
+                    <a class="nav-link" href="http://localhost:5000/upload_document_search">back</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -78,7 +78,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for row in results %}
+                {% for row in record %}
                 <tr>
                     <td>{{ row[0] }}</td>
                     <td>{{ row[1] }}</td>
@@ -94,9 +94,9 @@
                     <td>{{ row[8] }}</td>
                     <td>{{ row[9] }}</td>
                     <td>
-                        <form class="update-form" action="{{ url_for('update_record') }}" method="post">
-                            <input type="hidden" name="Rabet_Phone" value="{{ row[3] }}">
-                            <input type="hidden" name="Havaleh_Owner_MelliCode" value="{{ row[7] }}">
+                        <form class="update-form" action="{{ url_for('update_page') }}" method="post">
+                            <input type="hidden" name="Darkhast_number" value="{{ row[1] }}">
+                            <input type="hidden" name="paziresh_number" value="{{ row[12] }}">
                             <button type="submit" class="btn btn-primary btn-sm">Update</button>
                         </form>
                     </td>
