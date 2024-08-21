@@ -5,12 +5,13 @@ from datetime import datetime, timezone
 from werkzeug.utils import secure_filename
 import pandas as pd
 import os
-import time
+import datetime
+
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['UPLOAD_FOLDER'] = "C:\\Users\\mohaymen\\Desktop\\Flask_Proc\\uploads"
+app.config['vekalatname'] = "C:\\documents\\vekalatname"
 
 
 # Database connection
@@ -244,17 +245,20 @@ def update_page():
 
 @app.route('/upload', methods=['POST', 'get'])
 def upload_file():
-    if 'file' in request.files:
+    if 'vekalat_tahvil' in request.files:
         Darkhast_Number = request.form['Darkhast_number']
         Paziresh_Number = request.form['paziresh_number']
-        file = request.files['file']
-        file_extension = os.path.splitext(file.filename)[1]
-        filename = secure_filename(file.filename)
-        filename = Darkhast_Number + '_green_page' + file_extension
+        vekalat_tahvil = request.files['vekalat_tahvil']
+        file_extension = os.path.splitext(vekalat_tahvil.filename)[1]
+        filename = secure_filename(vekalat_tahvil.filename)
+        y = datetime.datetime.now()
+        x = str(datetime.datetime.now())
+
+        filename = Darkhast_Number + '_vekalatname_' + x[:11] + file_extension
         # secure_filename = secure_filename(file.filename)
         # Here you should save the file
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        cursor.execute("""INSERT INTO "asnad_files" ("filename", "darkhast_number", "paziresh_number") VALUES (%s, %s, %s)""", (filename, Darkhast_Number, Paziresh_Number))
+        vekalat_tahvil.save(os.path.join(app.config['vekalatname'], filename))
+        cursor.execute("""INSERT INTO "asnad_files" ("filename", "darkhast_number", "paziresh_number", "upload_date") VALUES ( %s, %s, %s, %s) ON CONFLICT ("darkhast_number", "paziresh_number") DO UPDATE SET "filename" = EXCLUDED."filename" , "upload_date" = EXCLUDED."upload_date" """, (filename, Darkhast_Number, Paziresh_Number, y))
         conn.commit()
         
         flash(f"File uploaded successfully", 'success')
