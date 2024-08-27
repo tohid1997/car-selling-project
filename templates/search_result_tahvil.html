@@ -86,9 +86,9 @@
                     <td>{{ row[8] }}</td>
                     <td>{{ row[9] }}</td>
                     <td>
-                        <form class="update-form" action="{{ url_for('update_record') }}" method="post">
-                            <input type="hidden" name="Rabet_Phone" value="{{ row[3] }}">
-                            <input type="hidden" name="Havaleh_Owner_MelliCode" value="{{ row[7] }}">
+                        <form class="update-form" action="{{ url_for('update_tahvil_record') }}" method="post">
+                            <input type="hidden" name="Darkhast_number" value="{{ row[3] }}">
+                            <input type="hidden" name="paziresh_number" value="{{ row[4] }}">
                             <button type="submit" class="btn btn-primary btn-sm">Update</button>
                         </form>
                     </td>

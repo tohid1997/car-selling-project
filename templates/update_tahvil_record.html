@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Record</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-control {
+            border-radius: 0.25rem;
+            text-align: center; /* Center text inside form fields */
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .alert {
+            border-radius: 0.25rem;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">Update Record</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/first_info/search_complete">back</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <form action="{{ url_for('save_update') }}" method="post">
+            <input type="hidden" name="record_id" value="{{ record[1] }}">
+            <div class="form-group" style="text-align: center;">
+                <label for="car_type">نام خودرو</label>
+                <input type="text" id="car_type" name="car_type" class="form-control" value="{{ record[8] }}" readonly>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="darkhast_number">تاریخ خرید</label>
+                <input type="datetime" id="darkhast_number" name="darkhast_number" class="form-control" value="{{ record[0] }}" readonly>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="paziresh_number">شماره پذیرش</label>
+                <input type="text" id="paziresh_numberr" name="paziresh_number" class="form-control" value="{{ record[2] }}" readonly>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="darkhast_number">شماره درخواست</label>
+                <input type="text" id="darkhast_number" name="darkhast_number" class="form-control" value="{{ record[1] }}" readonly>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="shasi_number" class="required">شماره شاسی</label>
+                <input type="text" id="shasi_number" name="shasi_number" class="form-control" value="{{ record[3] }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="pelak_number" class="required">شماره پلاک</label>
+                <input type="text" id="pelak_number" name="pelak_number" class="form-control" value="{{ record[4] }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="parking_name" class="required">نام پارکینگ</label>
+                <input type="text" id="parking_name" name="parking_name" class="form-control" value="{{ record[5] }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="tahvil_date">تاریخ تحویل</label>
+                <input type="date" id="tahvil_date" name="tahvil_date" class="form-control" value="{{ record[6] if record else '' }}">
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <label for="tahvil_driver">راننده تحویل گیرنده</label>
+                <input type="text" id="tahvil_driver" name="tahvil_driver" class="form-control" value="{{ record[7] if record else '' }}">
+            </div>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- jalaali-js library -->
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.min.js"></script>
+    <script>
+        document.getElementById('tahvil_date').addEventListener('blur', function() {
+            var shamsiDate = this.value;
+            var parts = shamsiDate.split('-');
+            if (parts.length === 3) {
+                var gy = jalaali.toGregorian(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+                this.value = gy.gy + '-' + ('0' + gy.gm).slice(-2) + '-' + ('0' + gy.gd).slice(-2);
+            }
+        });
+    </script>
+</body>
+</html>
+

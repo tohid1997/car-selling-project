@@ -357,6 +357,18 @@ def search_result_tahvil():
         return render_template('search_result_tahvil.html', results=results)
     return redirect(url_for('login'))
 
+@app.route('/update_tahvil_record', methods=['GET', 'POST'])
+def update_tahvil_record():
+    if 'loggedin' in session:
+        Darkhast_number = request.form.get('Darkhast_number')
+        paziresh_number = request.form.get('paziresh_number')
+
+        cursor.execute("""SELECT c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE c."Darkhast_number" = %s AND c."paziresh_number" = %s """, (Darkhast_number, paziresh_number))
+        record = cursor.fetchone()
+        
+        return render_template('update_tahvil_record.html', record=record)
+    return redirect(url_for('login'))
+
 
 
 
