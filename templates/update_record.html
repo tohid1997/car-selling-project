@@ -36,14 +36,30 @@
         .alert {
             border-radius: 0.25rem;
         }
+        .required::after {
+            content: " *";
+            color: red;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="#">Update Record</a>
-        <div class="ml-auto">
-            <a href="/logout" class="btn btn-light">Logout</a>
-            <a href="/home" class="btn btn-light">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:5000/first_info/search_complete">back</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
         </div>
     </nav>
     <div class="container mt-4">
@@ -66,15 +82,15 @@
                 <input type="text" id="rabet_name" name="rabet_name" class="form-control" value="{{ record[2] }}">
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="rabet_phone">شماره رابط</label>
+                <label for="rabet_phone" class="required">شماره رابط</label>
                 <input type="text" id="rabet_phone" name="rabet_phone" class="form-control" value="{{ record[3] }}">
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="mablagh_havaleh">قیمت حواله(تومان)</label>
+                <label for="mablagh_havaleh" class="required">قیمت حواله(تومان)</label>
                 <input type="number" id="mablagh_havaleh" name="mablagh_havaleh" class="form-control" value="{{ record[4] }}">
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="mablagh_havaleh">مبلغ واریزی(تومان)</label>
+                <label for="mablagh_havaleh" class="required">مبلغ واریزی(تومان)</label>
                 <input type="number" id="mablagh_havaleh" name="variz_mablagh" class="form-control" value="{{ record[10] }}">
             </div>
             <div class="form-group" style="text-align: center;">
@@ -90,7 +106,7 @@
                 <input type="text" id="havaleh_owner_name" name="havaleh_owner_name" class="form-control" value="{{ record[6] }}">
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="havaleh_owner_mellicode">کد ملی صاحب حواله</label>
+                <label for="havaleh_owner_mellicode"  class="required">کد ملی صاحب حواله</label>
                 <input type="text" id="havaleh_owner_mellicode" name="havaleh_owner_mellicode" class="form-control" value="{{ record[7] }}">
             </div>
             <div class="form-group" style="text-align: center;">

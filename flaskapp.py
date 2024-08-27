@@ -105,7 +105,6 @@ def first_info_new_info():
                     mablagh_havaleh = None
                 if variz_mablagh == '':
                     variz_mablagh = None
-                
 
                 Final_mablagh = int(variz_mablagh) + int(mablagh_havaleh)
 
@@ -118,6 +117,20 @@ def first_info_new_info():
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s)
                 """, (car_type, hesabe_varizi, paziresh_number, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp, variz_mablagh, Final_mablagh))
                 conn.commit()
+                cursor.execute("""MERGE INTO tahvil_info AS target
+                    USING (
+                        SELECT DISTINCT "Darkhast_number", "paziresh_number"
+                        FROM first_info
+                        where "first_info"."Darkhast_number" != '' or "first_info"."paziresh_number" != ''
+                    ) AS source
+                    ON "target"."darkhast_number" = "source"."Darkhast_number"
+                    AND "target"."paziresh_number" = "source"."paziresh_number"
+                    WHEN NOT MATCHED THEN
+                        INSERT ("darkhast_number", "paziresh_number")
+                        VALUES ("source"."Darkhast_number", "source"."paziresh_number")"""
+                )
+                conn.commit()
+
                 flash('Data inserted successfully!', 'success')
             except IntegrityError:
                 conn.rollback()
@@ -129,14 +142,11 @@ def first_info_new_info():
         return render_template('first_info_new_info.html')
     return redirect(url_for('login'))
 
-
 @app.route('/first_info/search_complete')
 def index():
     if 'loggedin' in session:
         return render_template('search_complete.html')
     return redirect(url_for('login'))
-
-
 
 @app.route('/first_info/search_complete/search_result', methods=['GET', 'POST'])
 def search():
@@ -158,8 +168,6 @@ def search():
         return render_template('search_results.html', results=results)
     return redirect(url_for('login'))
 
-
-
 @app.route('/first_info/search_complete/update_record', methods=['GET', 'POST'])
 def update_record():
     if 'loggedin' in session:
@@ -171,7 +179,6 @@ def update_record():
         
         return render_template('update_record.html', record=record)
     return redirect(url_for('login'))
-
 
 @app.route('/first_info/search_complete/save_update', methods=['POST'])
 def save_update():
@@ -187,6 +194,7 @@ def save_update():
         sakha_password = request.form.get('sakha_password')
         variz_mablagh = request.form.get('variz_mablagh')
         hesabe_varizi = request.form.get('hesabe_varizi')
+        paziresh_number = request.form.get('paziresh_number')
 
         if variz_mablagh == '':
             variz_mablagh = 0
@@ -206,22 +214,32 @@ def save_update():
 
         cursor.execute("""
             UPDATE first_info
-            SET "Car_type" = %s, "hesabe_varizi"=%s, "Darkhast_number" = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
+            SET "Car_type" = %s, "hesabe_varizi"=%s, "Darkhast_number" = %s, paziresh_number = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
             WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s 
-        """, (car_type, hesabe_varizi, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
+        """, (car_type, hesabe_varizi, darkhast_number, paziresh_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
+        conn.commit()
+        cursor.execute("""MERGE INTO tahvil_info AS target
+                        USING (
+                            SELECT DISTINCT "Darkhast_number", "paziresh_number"
+                            FROM first_info
+                            where "first_info"."Darkhast_number" != '' or "first_info"."paziresh_number" != ''
+                        ) AS source
+                        ON "target"."darkhast_number" = "source"."Darkhast_number"
+                        AND "target"."paziresh_number" = "source"."paziresh_number"
+                        WHEN NOT MATCHED THEN
+                            INSERT ("darkhast_number", "paziresh_number")
+                            VALUES ("source"."Darkhast_number", "source"."paziresh_number")"""
+                    )
         conn.commit()
 
         return redirect(url_for('first_info'))
     return redirect(url_for('login'))
-
-
 
 @app.route('/upload_document_search')
 def upload_document_search():
     if 'loggedin' in session:
         return render_template('upload_document_search.html')
     return redirect(url_for('login'))
-
 
 @app.route('/upload_document_search_complete', methods=['GET', 'POST'])
 def upload_document_search_complete():
@@ -260,8 +278,6 @@ def update_page():
                 return redirect(url_for('update_page'))
         return render_template('upload_form.html', record=None)
     return redirect(url_for('login'))
-
-
 
 @app.route('/upload', methods=['POST', 'get'])
 def upload_file():

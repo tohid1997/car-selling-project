@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert New Record</title>
+    <title>Update Record</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -23,6 +23,7 @@
         }
         .form-control {
             border-radius: 0.25rem;
+            text-align: center; /* Center text inside form fields */
         }
         .btn-primary {
             background-color: #007bff;
@@ -34,6 +35,10 @@
         }
         .alert {
             border-radius: 0.25rem;
+        }
+        .required::after {
+            content: " *";
+            color: red;
         }
     </style>
 </head>
@@ -91,15 +96,15 @@
                 <input type="text" class="form-control" style="text-align: center;" id="Rabet_Name" name="rabet_name" value="" >
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="Rabet_Phone">شماره تلفن رابط</label>
+                <label for="Rabet_Phone" class="required">شماره تلفن رابط</label>
                 <input type="text" class="form-control" style="text-align: center;" id="Rabet_Phone" name="rabet_phone" required>
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="Mablagh_Havaleh">قیمت حواله(تومان)</label>
+                <label for="Mablagh_Havaleh" class="required">قیمت حواله(تومان)</label>
                 <input type="number" class="form-control" style="text-align: center;" id="Mablagh_Havaleh" name="mablagh_havaleh" value="" >
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="Sakha_Password">مبلغ واریزی(تومان)</label>
+                <label for="Sakha_Password" class="required">مبلغ واریزی(تومان)</label>
                 <input type="number" class="form-control" style="text-align: center;" id="variz_mablagh" name="variz_mablagh" value="" >
             </div>
             <div class="form-group" style="text-align: center;">
@@ -111,12 +116,12 @@
                 <input type="text" class="form-control" style="text-align: center;" id="Havaleh_Owner_Name" name="havaleh_owner_name" value="" >
             </div>
             <div class="form-group" style="text-align: center;">
-                <label for="Havaleh_Owner_MelliCode">کد ملی صاحب حواله</label>
+                <label for="Havaleh_Owner_MelliCode" class="required">کد ملی صاحب حواله</label>
                 <input type="text" class="form-control" style="text-align: center;" id="Havaleh_Owner_MelliCode" name="havaleh_owner_mellicode" required >
             </div>
             <div class="form-group" style="text-align: center;">
                 <label for="hesabe_varizi">صاحب حساب واریزی</label>
-                <input type="text" class="form-control" style="text-align: center;" id="hesabe_varizi" name="hesabe_varizi" required >
+                <input type="text" class="form-control" style="text-align: center;" id="hesabe_varizi" name="hesabe_varizi" value="" >
             </div>
             <div class="form-group" style="text-align: center;">
                 <label for="Sakha_Password">رمز سخا</label>
