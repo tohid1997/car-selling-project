@@ -72,9 +72,11 @@
                     <th>شهر حواله</th>
                     <th>نام صاحب حواله</th>
                     <th>کدملی صاحب حواله</th>
+                    <th>صاحب حساب واریزی</th> 
                     <th>رمز سخا</th>
                     <th>تاریخ خرید</th>
-                    <th>Action</th>
+                    <th>آپلود فایل</th>
+                    <th>دانلود فایل</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,13 +93,21 @@
                     <td>{{ row[5] }}</td>
                     <td>{{ row[6] }}</td>
                     <td>{{ row[7] }}</td>
+                    <td>{{ row[13] }}</td>
                     <td>{{ row[8] }}</td>
                     <td>{{ row[9] }}</td>
                     <td>
                         <form class="update-form" action="{{ url_for('update_page') }}" method="post">
                             <input type="hidden" name="Darkhast_number" value="{{ row[1] }}">
                             <input type="hidden" name="paziresh_number" value="{{ row[12] }}">
-                            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            <button type="submit" class="btn btn-primary btn-sm">upload</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="update-form" action="{{ url_for('download_file') }}" method="post">
+                            <input type="hidden" name="Darkhast_number2" value="{{ row[1] }}">
+                            <input type="hidden" name="paziresh_number2" value="{{ row[12] }}">
+                            <button type="submit" class="btn btn-primary btn-sm">download</button>
                         </form>
                     </td>
                 </tr>
