@@ -330,6 +330,34 @@ def download_file():
         return render_template('download.html')
     return redirect(url_for('login'))
 
+@app.route('/search_tahvil')
+def search_tahvil():
+    if 'loggedin' in session:
+        return render_template('search_tahvil.html')
+    return redirect(url_for('login'))
+
+@app.route('/search_result_tahvil', methods=['GET', 'POST'])
+def search_result_tahvil():
+    if 'loggedin' in session:
+        melli_code = request.form.get('melli_code')
+        rabet_phone = request.form.get('rabet_phone')
+
+        if melli_code and rabet_phone:
+            cursor.execute("""SELECT c."Havaleh_Owner_MelliCode", c."Rabet_Phone", c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE (c."Darkhast_number" != '' and c."paziresh_number" != '') and (c."Havaleh_Owner_MelliCode" = %s OR c."Rabet_Phone" = %s ) ORDER BY c."inserted_date"  DESC """, (melli_code, rabet_phone))
+        elif melli_code:
+            cursor.execute("""SELECT c."Havaleh_Owner_MelliCode", c."Rabet_Phone", c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE (c."Darkhast_number" != '' and c."paziresh_number" != '') and c."Havaleh_Owner_MelliCode" = %s ORDER BY c."inserted_date"  DESC """, (melli_code,))
+        elif rabet_phone:
+            cursor.execute("""SELECT c."Havaleh_Owner_MelliCode", c."Rabet_Phone", c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE (c."Darkhast_number" != '' and c."paziresh_number" != '') and c."Rabet_Phone" = %s ORDER BY c."inserted_date"  DESC """, (rabet_phone,))
+        elif melli_code == '' and rabet_phone =='':
+            cursor.execute("""SELECT c."Havaleh_Owner_MelliCode", c."Rabet_Phone", c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE (c."Darkhast_number" != '' and c."paziresh_number" != '') ORDER BY c."inserted_date"  DESC """)
+        
+        results = cursor.fetchall()
+
+
+        return render_template('search_result_tahvil.html', results=results)
+    return redirect(url_for('login'))
+
+
 
 
 
