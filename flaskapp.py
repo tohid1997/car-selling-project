@@ -126,8 +126,8 @@ def first_info_new_info():
                     ON "target"."darkhast_number" = "source"."Darkhast_number"
                     AND "target"."paziresh_number" = "source"."paziresh_number"
                     WHEN NOT MATCHED THEN
-                        INSERT ("darkhast_number", "paziresh_number")
-                        VALUES ("source"."Darkhast_number", "source"."paziresh_number")"""
+                        INSERT ("darkhast_number", "paziresh_number", "shasi_number", "pelak_number", "parking_name", "tahvil_driver")
+                        VALUES ("source"."Darkhast_number", "source"."paziresh_number", '', '', '', '')"""
                 )
                 conn.commit()
 
@@ -156,11 +156,11 @@ def search():
 
         
         if melli_code and rabet_phone:
-            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s OR "Rabet_Phone" = %s""", (melli_code, rabet_phone))
+            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s OR "Rabet_Phone" = %s ORDER BY "inserted_date"  DESC""", (melli_code, rabet_phone))
         elif melli_code:
-            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s""", (melli_code,))
+            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s ORDER BY "inserted_date"  DESC""", (melli_code,))
         elif rabet_phone:
-            cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s""", (rabet_phone,))
+            cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s ORDER BY "inserted_date"  DESC""", (rabet_phone,))
         elif melli_code == '' and rabet_phone =='':
             cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
         
@@ -227,11 +227,11 @@ def save_update():
                         ON "target"."darkhast_number" = "source"."Darkhast_number"
                         AND "target"."paziresh_number" = "source"."paziresh_number"
                         WHEN NOT MATCHED THEN
-                            INSERT ("darkhast_number", "paziresh_number")
-                            VALUES ("source"."Darkhast_number", "source"."paziresh_number")"""
+                            INSERT ("darkhast_number", "paziresh_number", "shasi_number", "pelak_number", "parking_name", "tahvil_driver")
+                            VALUES ("source"."Darkhast_number", "source"."paziresh_number", '', '', '', '')"""
                     )
         conn.commit()
-
+        flash('Data updated successfully!', 'success')
         return redirect(url_for('first_info'))
     return redirect(url_for('login'))
 
@@ -367,6 +367,37 @@ def update_tahvil_record():
         record = cursor.fetchone()
         
         return render_template('update_tahvil_record.html', record=record)
+    return redirect(url_for('login'))
+
+@app.route('/save_tahvil_update', methods=['POST'])
+def save_tahvil_update():
+    if 'loggedin' in session:
+        car_type = request.form['car_type']
+        tarikh_kharid = request.form.get('tarikh_kharid')
+        paziresh_number = request.form.get('paziresh_number')
+        darkhast_number = request.form.get('darkhast_number')
+        shasi_number = request.form.get('shasi_number')
+        pelak_number = request.form.get('pelak_number')
+        parking_name = request.form.get('parking_name')
+        tahvil_date = request.form.get('tahvil_date')
+        tahvil_driver = request.form.get('tahvil_driver')
+
+        # if variz_mablagh == '':
+        #     variz_mablagh = 0
+
+        # if mablagh_havaleh == '':
+        #     mablagh_havaleh = 0
+
+
+
+        cursor.execute("""
+            UPDATE tahvil_info
+            SET "shasi_number" = %s, "pelak_number"=%s, "parking_name" = %s, tahvil_date = %s, "tahvil_driver" = %s
+            WHERE "darkhast_number" = %s and "paziresh_number" = %s 
+        """, (shasi_number, pelak_number, parking_name, tahvil_date, tahvil_driver, darkhast_number, paziresh_number))
+        conn.commit()
+        flash('Data updated successfully!', 'success')
+        return redirect(url_for('search_tahvil'))
     return redirect(url_for('login'))
 
 
