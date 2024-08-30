@@ -7,6 +7,9 @@ import pandas as pd
 import os
 import datetime
 from persiantools.jdatetime import JalaliDateTime
+import jdatetime
+from jdatetime import datetime as jdatetime1
+from datetime import datetime as gdatetime
 
 
 
@@ -165,7 +168,16 @@ def search():
             cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
         
         results = cursor.fetchall()
-        return render_template('search_results.html', results=results)
+
+        # Convert Gregorian datetimes to Jalali
+        jalali_results = []
+        for row in results:
+            gregorian_datetime = row[9]  # Assuming the datetime is in the 10th column
+            jalali_datetime = jdatetime.datetime.fromgregorian(datetime=gregorian_datetime).strftime('%Y-%m-%d %H:%M:%S')
+            jalali_row = row[:9] + (jalali_datetime,) + row[10:]
+            jalali_results.append(jalali_row)
+
+        return render_template('search_results.html', results=jalali_results)
     return redirect(url_for('login'))
 
 @app.route('/first_info/search_complete/update_record', methods=['GET', 'POST'])
@@ -258,7 +270,16 @@ def upload_document_search_complete():
             cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
         
         record = cursor.fetchall()
-        return render_template('upload_document_search_complete.html', record=record)
+
+        # Convert Gregorian datetimes to Jalali
+        jalali_results = []
+        for row in record:
+            gregorian_datetime = row[9]  # Assuming the datetime is in the 10th column
+            jalali_datetime = jdatetime.datetime.fromgregorian(datetime=gregorian_datetime).strftime('%Y-%m-%d %H:%M:%S')
+            jalali_row = row[:9] + (jalali_datetime,) + row[10:]
+            jalali_results.append(jalali_row)
+
+        return render_template('upload_document_search_complete.html', record=jalali_results)
     return redirect(url_for('login'))
 
 @app.route('/upload_page', methods=['GET', 'POST'])
@@ -353,8 +374,18 @@ def search_result_tahvil():
         
         results = cursor.fetchall()
 
+        # Convert Gregorian datetimes to Jalali
+        jalali_results = []
+        for row in results:
+            gregorian_datetime = row[2]  # Assuming the datetime is in the 10th column
+            tahvil_date_jalali = row[8]
+            jalali_datetime = jdatetime.datetime.fromgregorian(datetime=gregorian_datetime).strftime('%Y-%m-%d %H:%M:%S')
+            tahvil_date = jdatetime.datetime.fromgregorian(datetime=tahvil_date_jalali).strftime('%Y-%m-%d')
+            jalali_row = row[:2] + (jalali_datetime,) + row[3:8] + (tahvil_date,) + row[9:]
+            jalali_results.append(jalali_row)
 
-        return render_template('search_result_tahvil.html', results=results)
+
+        return render_template('search_result_tahvil.html', results=jalali_results)
     return redirect(url_for('login'))
 
 @app.route('/update_tahvil_record', methods=['GET', 'POST'])
@@ -365,6 +396,13 @@ def update_tahvil_record():
 
         cursor.execute("""SELECT c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE c."Darkhast_number" = %s AND c."paziresh_number" = %s """, (Darkhast_number, paziresh_number))
         record = cursor.fetchone()
+        if record:
+            # Convert the Gregorian datetime to Jalali
+            inserted_datetime_gregorian = record[0]
+            tahvil_date = record[6]
+            inserted_datetime_jalali = jdatetime.datetime.fromgregorian(datetime=inserted_datetime_gregorian).strftime('%Y-%m-%d %H:%M:%S')
+            tahvil_date_jalali = jdatetime.datetime.fromgregorian(datetime=tahvil_date).strftime('%Y-%m-%d')
+            record = (inserted_datetime_jalali,) + record[1:6] + (tahvil_date_jalali,) + record[7:]
         
         return render_template('update_tahvil_record.html', record=record)
     return redirect(url_for('login'))
@@ -382,6 +420,8 @@ def save_tahvil_update():
         tahvil_date = request.form.get('tahvil_date')
         tahvil_driver = request.form.get('tahvil_driver')
 
+        tahvil_date_gregorian = jdatetime1.strptime(tahvil_date, '%Y/%m/%d').togregorian()
+
         # if variz_mablagh == '':
         #     variz_mablagh = 0
 
@@ -394,7 +434,7 @@ def save_tahvil_update():
             UPDATE tahvil_info
             SET "shasi_number" = %s, "pelak_number"=%s, "parking_name" = %s, tahvil_date = %s, "tahvil_driver" = %s
             WHERE "darkhast_number" = %s and "paziresh_number" = %s 
-        """, (shasi_number, pelak_number, parking_name, tahvil_date, tahvil_driver, darkhast_number, paziresh_number))
+        """, (shasi_number, pelak_number, parking_name, tahvil_date_gregorian, tahvil_driver, darkhast_number, paziresh_number))
         conn.commit()
         flash('Data updated successfully!', 'success')
         return redirect(url_for('search_tahvil'))
