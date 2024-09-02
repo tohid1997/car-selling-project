@@ -85,6 +85,7 @@
         {% endwith %}
         <h2>Upload File</h2>
             <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="Havaleh_Owner_MelliCode" value="{{ record[7] }}">
                 <div class="form-group" style="text-align: center;">
                     <label for="Darkhast_Number">Darkhast Number</label>
                     <input type="text" class="form-control" style="text-align: center;" id="Darkhast_Number" name="Darkhast_number" value="{{ record[1] if record else '' }}" readonly>

@@ -65,7 +65,7 @@
     </nav>
     <div class="container mt-4">
         <form action="{{ url_for('save_tahvil_update') }}" method="post">
-            <input type="hidden" name="record_id" value="{{ record[1] }}">
+            <input type="hidden" name="record_id" value="{{ record[9] }}">
             <div class="form-group" style="text-align: center;">
                 <label for="car_type">نام خودرو</label>
                 <input type="text" id="car_type" name="car_type" class="form-control" value="{{ record[8] }}" readonly>

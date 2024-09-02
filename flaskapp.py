@@ -15,7 +15,7 @@ from datetime import datetime as gdatetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['vekalatname'] = "C:\\documents\\vekalatname"
+app.config['vekalatname'] = "C:\\documents\\First_docs"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 
 
@@ -114,30 +114,43 @@ def first_info_new_info():
                 if Final_mablagh == '':
                     Final_mablagh = None
 
-                    
                 cursor.execute("""
                     INSERT INTO first_info ("Car_type", "hesabe_varizi", "paziresh_number", "Darkhast_number", "Rabet_Name", "Rabet_Phone", "Mablagh_Havaleh(toman)", "Havale_City", "Havaleh_Owner_Name", "Havaleh_Owner_MelliCode", "Sakha_Password" , "inserted_date", "variz_mablagh", "final_mablagh")
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s);
                 """, (car_type, hesabe_varizi, paziresh_number, darkhast_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, current_timestamp, variz_mablagh, Final_mablagh))
                 conn.commit()
                 cursor.execute("""MERGE INTO tahvil_info AS target
-                    USING (
-                        SELECT DISTINCT "Darkhast_number", "paziresh_number"
-                        FROM first_info
-                        where "first_info"."Darkhast_number" != '' or "first_info"."paziresh_number" != ''
-                    ) AS source
-                    ON "target"."darkhast_number" = "source"."Darkhast_number"
-                    AND "target"."paziresh_number" = "source"."paziresh_number"
-                    WHEN NOT MATCHED THEN
-                        INSERT ("darkhast_number", "paziresh_number", "shasi_number", "pelak_number", "parking_name", "tahvil_driver")
-                        VALUES ("source"."Darkhast_number", "source"."paziresh_number", '', '', '', '')"""
+                using (SELECT DISTINCT "Darkhast_number",
+                                    "paziresh_number",
+                                    "tahvil_info_id"
+                    FROM   first_info
+                    WHERE  "first_info"."Darkhast_number" != ''
+                            AND "first_info"."paziresh_number" != '') AS source
+                ON "target"."darkhast_number" = "source"."Darkhast_number"
+                AND "target"."paziresh_number" = "source"."paziresh_number"
+                AND "target"."id" = "source"."tahvil_info_id"
+                WHEN NOT matched THEN
+                INSERT ( "darkhast_number",
+                        "paziresh_number",
+                        "shasi_number",
+                        "pelak_number",
+                        "parking_name",
+                        "tahvil_driver",
+                        "id" )
+                VALUES ( "source"."Darkhast_number",
+                        "source"."paziresh_number",
+                        '',
+                        '',
+                        '',
+                        '',
+                        "source"."tahvil_info_id" ) """
                 )
                 conn.commit()
 
                 flash('Data inserted successfully!', 'success')
-            except IntegrityError:
+            except IntegrityError as b:
                 conn.rollback()
-                flash("شماره درخواست تکراری است", 'danger')
+                flash(f"An error occurred: {b}", 'danger')
             except Exception as e:
                 conn.rollback()
                 flash(f"An error occurred: {e}", 'danger')
@@ -207,6 +220,7 @@ def save_update():
         variz_mablagh = request.form.get('variz_mablagh')
         hesabe_varizi = request.form.get('hesabe_varizi')
         paziresh_number = request.form.get('paziresh_number')
+        tahvil_id = request.form.get('record_id')
 
         if variz_mablagh == '':
             variz_mablagh = 0
@@ -227,21 +241,35 @@ def save_update():
         cursor.execute("""
             UPDATE first_info
             SET "Car_type" = %s, "hesabe_varizi"=%s, "Darkhast_number" = %s, paziresh_number = %s, "Rabet_Name" = %s, "Rabet_Phone" = %s, "Mablagh_Havaleh(toman)" = %s, "Havale_City" = %s, "Havaleh_Owner_Name" = %s, "Havaleh_Owner_MelliCode" = %s, "Sakha_Password" = %s , "variz_mablagh" = %s, "final_mablagh" = %s
-            WHERE "Rabet_Phone" = %s and "Havaleh_Owner_MelliCode" = %s 
-        """, (car_type, hesabe_varizi, darkhast_number, paziresh_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, rabet_phone, havaleh_owner_mellicode))
+            WHERE "id" = %s
+        """, (car_type, hesabe_varizi, darkhast_number, paziresh_number, rabet_name, rabet_phone, mablagh_havaleh, havale_city, havaleh_owner_name, havaleh_owner_mellicode, sakha_password, variz_mablagh, Final_mablagh, tahvil_id))
         conn.commit()
         cursor.execute("""MERGE INTO tahvil_info AS target
-                        USING (
-                            SELECT DISTINCT "Darkhast_number", "paziresh_number"
-                            FROM first_info
-                            where "first_info"."Darkhast_number" != '' or "first_info"."paziresh_number" != ''
-                        ) AS source
-                        ON "target"."darkhast_number" = "source"."Darkhast_number"
-                        AND "target"."paziresh_number" = "source"."paziresh_number"
-                        WHEN NOT MATCHED THEN
-                            INSERT ("darkhast_number", "paziresh_number", "shasi_number", "pelak_number", "parking_name", "tahvil_driver")
-                            VALUES ("source"."Darkhast_number", "source"."paziresh_number", '', '', '', '')"""
-                    )
+                using (SELECT DISTINCT "Darkhast_number",
+                                    "paziresh_number",
+                                    "tahvil_info_id"
+                    FROM   first_info
+                    WHERE  "first_info"."Darkhast_number" != ''
+                            AND "first_info"."paziresh_number" != '') AS source
+                ON  "target"."id" = "source"."tahvil_info_id"
+                WHEN NOT matched THEN
+                INSERT ( "darkhast_number",
+                        "paziresh_number",
+                        "shasi_number",
+                        "pelak_number",
+                        "parking_name",
+                        "tahvil_driver",
+                        "id" )
+                VALUES ( "source"."Darkhast_number",
+                        "source"."paziresh_number",
+                        '',
+                        '',
+                        '',
+                        '',
+                        "source"."tahvil_info_id" )
+                WHEN MATCHED THEN
+                UPDATE SET "darkhast_number"= "source"."Darkhast_number" , "paziresh_number" = "source"."paziresh_number"  """
+                )
         conn.commit()
         flash('Data updated successfully!', 'success')
         return redirect(url_for('first_info'))
@@ -306,13 +334,14 @@ def upload_file():
         if 'vekalat_tahvil' in request.files:
             Darkhast_Number = request.form['Darkhast_number']
             Paziresh_Number = request.form['paziresh_number']
+            Havaleh_Owner_MelliCode = request.form['Havaleh_Owner_MelliCode']
             vekalat_tahvil = request.files['vekalat_tahvil']
             file_extension = os.path.splitext(vekalat_tahvil.filename)[1]
             filename = secure_filename(vekalat_tahvil.filename)
             y = JalaliDateTime.now().to_gregorian()
             x = str(JalaliDateTime.now())
 
-            filename = Darkhast_Number + '_vekalatname_' + x[:11] + file_extension
+            filename = Havaleh_Owner_MelliCode + '_First_docs_' + x[:11] + file_extension
             # secure_filename = secure_filename(file.filename)
             # Here you should save the file
             vekalat_tahvil.save(os.path.join(app.config['vekalatname'], filename))
@@ -328,8 +357,7 @@ def upload_file():
 
 @app.route('/download', methods=['GET', 'POST'])
 def download_file():
-    if 'loggedin' in session:
-        
+    if 'loggedin' in session:      
         if request.method in ['GET','POST']:
             darkhast_number = request.form['Darkhast_number2']
             paziresh_number = request.form['paziresh_number2']
@@ -343,7 +371,7 @@ def download_file():
 
             if result:
                 filename = result[0]
-                directory = r'C:\documents\vekalatname'
+                directory = r"C:\documents\First_docs"
                 return send_from_directory(directory, filename, as_attachment=True)
             else:
                 flash(f"فایل برای این رکورد آپلود نشده است", 'danger')
@@ -380,7 +408,11 @@ def search_result_tahvil():
             gregorian_datetime = row[2]  # Assuming the datetime is in the 10th column
             tahvil_date_jalali = row[8]
             jalali_datetime = jdatetime.datetime.fromgregorian(datetime=gregorian_datetime).strftime('%Y-%m-%d %H:%M:%S')
-            tahvil_date = jdatetime.datetime.fromgregorian(datetime=tahvil_date_jalali).strftime('%Y-%m-%d')
+            if tahvil_date_jalali:
+                tahvil_date = jdatetime.datetime.fromgregorian(datetime=tahvil_date_jalali).strftime('%Y-%m-%d')
+            else:
+                tahvil_date = tahvil_date_jalali
+            
             jalali_row = row[:2] + (jalali_datetime,) + row[3:8] + (tahvil_date,) + row[9:]
             jalali_results.append(jalali_row)
 
@@ -394,14 +426,32 @@ def update_tahvil_record():
         Darkhast_number = request.form.get('Darkhast_number')
         paziresh_number = request.form.get('paziresh_number')
 
-        cursor.execute("""SELECT c."inserted_date", c."Darkhast_number", c."paziresh_number", s."shasi_number", s."pelak_number", s."parking_name", s."tahvil_date", s."tahvil_driver" , c."Car_type" from "first_info" c LEFT JOIN "tahvil_info" s ON c."Darkhast_number" = s."darkhast_number" AND c."paziresh_number" = s."paziresh_number" WHERE c."Darkhast_number" = %s AND c."paziresh_number" = %s """, (Darkhast_number, paziresh_number))
+        cursor.execute("""SELECT c."inserted_date",
+                            c."Darkhast_number",
+                            c."paziresh_number",
+                            s."shasi_number",
+                            s."pelak_number",
+                            s."parking_name",
+                            s."tahvil_date",
+                            s."tahvil_driver",
+                            c."Car_type",
+                            s."id"
+                        FROM   "first_info" c
+                            left join "tahvil_info" s
+                                    ON c."Darkhast_number" = s."darkhast_number"
+                                        AND c."paziresh_number" = s."paziresh_number"
+                        WHERE  c."Darkhast_number" = %s
+                            AND c."paziresh_number" = %s """, (Darkhast_number, paziresh_number))
         record = cursor.fetchone()
         if record:
             # Convert the Gregorian datetime to Jalali
             inserted_datetime_gregorian = record[0]
             tahvil_date = record[6]
             inserted_datetime_jalali = jdatetime.datetime.fromgregorian(datetime=inserted_datetime_gregorian).strftime('%Y-%m-%d %H:%M:%S')
-            tahvil_date_jalali = jdatetime.datetime.fromgregorian(datetime=tahvil_date).strftime('%Y-%m-%d')
+            if tahvil_date:
+                tahvil_date_jalali = jdatetime.datetime.fromgregorian(datetime=tahvil_date).strftime('%Y-%m-%d')
+            else:
+                tahvil_date_jalali = tahvil_date
             record = (inserted_datetime_jalali,) + record[1:6] + (tahvil_date_jalali,) + record[7:]
         
         return render_template('update_tahvil_record.html', record=record)
@@ -419,30 +469,64 @@ def save_tahvil_update():
         parking_name = request.form.get('parking_name')
         tahvil_date = request.form.get('tahvil_date')
         tahvil_driver = request.form.get('tahvil_driver')
+        tahvil_id = request.form.get('record_id')
 
         tahvil_date_gregorian = jdatetime1.strptime(tahvil_date, '%Y/%m/%d').togregorian()
-
-        # if variz_mablagh == '':
-        #     variz_mablagh = 0
-
-        # if mablagh_havaleh == '':
-        #     mablagh_havaleh = 0
-
-
 
         cursor.execute("""
             UPDATE tahvil_info
             SET "shasi_number" = %s, "pelak_number"=%s, "parking_name" = %s, tahvil_date = %s, "tahvil_driver" = %s
-            WHERE "darkhast_number" = %s and "paziresh_number" = %s 
-        """, (shasi_number, pelak_number, parking_name, tahvil_date_gregorian, tahvil_driver, darkhast_number, paziresh_number))
+            WHERE "id" = %s 
+        """, (shasi_number, pelak_number, parking_name, tahvil_date_gregorian, tahvil_driver, tahvil_id))
         conn.commit()
         flash('Data updated successfully!', 'success')
         return redirect(url_for('search_tahvil'))
     return redirect(url_for('login'))
 
+@app.route('/first_info/search_for_saham')
+def search_for_saham():
+    if 'loggedin' in session:
+        return render_template('search_for_saham.html')
+    return redirect(url_for('login'))
+
+@app.route('/first_info/search_for_saham/result', methods=['GET', 'POST'])
+def search_for_saham_result():
+    if 'loggedin' in session:
+        melli_code = request.form.get('melli_code')
+        rabet_phone = request.form.get('rabet_phone')
+
+        
+        if melli_code and rabet_phone:
+            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s OR "Rabet_Phone" = %s ORDER BY "inserted_date"  DESC""", (melli_code, rabet_phone))
+        elif melli_code:
+            cursor.execute("""SELECT * FROM first_info WHERE "Havaleh_Owner_MelliCode" = %s ORDER BY "inserted_date"  DESC""", (melli_code,))
+        elif rabet_phone:
+            cursor.execute("""SELECT * FROM first_info WHERE "Rabet_Phone" = %s ORDER BY "inserted_date"  DESC""", (rabet_phone,))
+        elif melli_code == '' and rabet_phone =='':
+            cursor.execute("""SELECT * FROM first_info ORDER BY "inserted_date"  DESC """)
+        
+        results = cursor.fetchall()
+
+        # Convert Gregorian datetimes to Jalali
+        jalali_results = []
+        for row in results:
+            gregorian_datetime = row[9]  # Assuming the datetime is in the 10th column
+            jalali_datetime = jdatetime.datetime.fromgregorian(datetime=gregorian_datetime).strftime('%Y-%m-%d %H:%M:%S')
+            jalali_row = row[:9] + (jalali_datetime,) + row[10:]
+            jalali_results.append(jalali_row)
+
+        return render_template('search_for_saham_result.html', results=jalali_results)
+    return redirect(url_for('login'))
 
 
-
+@app.route('/first_info/search_for_saham/insert')
+def insert_saham_information():
+    if 'loggedin' in session:
+        # Darkhast_number = request.form.get('Darkhast_number')
+        # paziresh_number = request.form.get('paziresh_number')
+        
+        return render_template('insert_saham_information.html')
+    return redirect(url_for('login'))
 
 
 
