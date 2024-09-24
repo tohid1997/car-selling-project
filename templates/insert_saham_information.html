@@ -64,22 +64,25 @@
         </div>
     </nav>
     <div class="container mt-4">
-        <form action="#" >
+        <form action="{{ url_for('save_saham_update') }}" method="post">
+            <input type="hidden" name="record_id" value="{{ id }}">
             <div id="dynamic-form">
+                {% for row in saham_info %}
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="person_name">نام شخص</label>
-                        <input type="text" id="person_name" name="person_name[]" class="form-control" required>
+                        <input type="text" id="person_name" name="person_name[]" class="form-control" value="{{ row[0] }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="saham_percent">درصد سهام</label>
-                        <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" required>
+                        <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" value="{{ row[1] }}" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="mosharekat_mablagh">مبلغ مشارکت</label>
-                        <input type="number" id="mosharekat_mablagh" name="mosharekat_mablagh[]" class="form-control" required>
+                        <input type="number" id="mosharekat_mablagh" name="mosharekat_mablagh[]" class="form-control" value="{{ row[2] }}" required>
                     </div>
                 </div>
+                {% endfor %}
             </div>
             <button type="button" class="btn btn-secondary" id="add-row">Add Row</button>
             <button type="submit" class="btn btn-primary">Submit</button>

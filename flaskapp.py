@@ -519,14 +519,47 @@ def search_for_saham_result():
     return redirect(url_for('login'))
 
 
-@app.route('/first_info/search_for_saham/insert')
+@app.route('/first_info/search_for_saham/insert', methods=['GET', 'POST'])
 def insert_saham_information():
     if 'loggedin' in session:
-        # Darkhast_number = request.form.get('Darkhast_number')
-        # paziresh_number = request.form.get('paziresh_number')
+        id = request.form.get('id')
         
-        return render_template('insert_saham_information.html')
+        # Fetch data from saham_info table
+        cursor.execute("SELECT person_name, saham_percent, mosharekat_mablagh FROM saham_info WHERE id = %s", (id,))
+        saham_info = cursor.fetchall()
+        
+        return render_template('insert_saham_information.html', saham_info=saham_info, id=id)
     return redirect(url_for('login'))
+
+@app.route('/first_info/search_for_saham/update', methods=['GET', 'POST'])
+def save_saham_update():
+    try:
+        record_id = request.form.get('record_id')
+        person_names = request.form.getlist('person_name')
+        saham_percents = request.form.getlist('saham_percent')
+        mosharekat_mablaghs = request.form.getlist('mosharekat_mablagh')
+        print("saham is: ", person_names)
+        
+        # Delete existing records for the given id
+        cursor.execute("DELETE FROM saham_info WHERE id = %s", (record_id,))
+        conn.commit()
+        # Insert updated records
+        for person_name, saham_percent, mosharekat_mablagh in zip(person_names, saham_percents, mosharekat_mablaghs):
+            cursor.execute("""
+                INSERT INTO saham_info (id, person_name, saham_percent, mosharekat_mablagh)
+                VALUES (%s, %s, %s, %s)
+            """, (record_id, person_name, saham_percent, mosharekat_mablagh))
+            conn.commit()
+        flash('saham info updated successfully!', 'success')
+        return render_template('sfirst_info.html')
+    except IntegrityError as b:
+        conn.rollback()
+        flash(f"An error occurred: {b}", 'danger')
+    except Exception as e:
+        conn.rollback()
+        flash(f"An error occurred: {e}", 'danger')
+    return render_template('first_info.html')
+
 
 
 
