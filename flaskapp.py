@@ -523,35 +523,45 @@ def search_for_saham_result():
 def insert_saham_information():
     if 'loggedin' in session:
         id = request.form.get('id')
+        mablagh_kol = request.form.get('mablagh_kol')
         
         # Fetch data from saham_info table
         cursor.execute("SELECT person_name, saham_percent, mosharekat_mablagh FROM saham_info WHERE id = %s", (id,))
         saham_info = cursor.fetchall()
         
-        return render_template('insert_saham_information.html', saham_info=saham_info, id=id)
+        return render_template('insert_saham_information.html', saham_info=saham_info, id=id , mablagh_kol=mablagh_kol)
     return redirect(url_for('login'))
 
 @app.route('/first_info/search_for_saham/update', methods=['GET', 'POST'])
 def save_saham_update():
     try:
         record_id = request.form.get('record_id')
-        person_names = request.form.getlist('person_name')
-        saham_percents = request.form.getlist('saham_percent')
-        mosharekat_mablaghs = request.form.getlist('mosharekat_mablagh')
-        print("saham is: ", person_names)
+        mablagh_kol = float(request.form.get('mablagh_kol'))
+        person_names = request.form.getlist('person_name[]')
+        saham_percents = request.form.getlist('saham_percent[]')
+        mosharekat_mablaghs = request.form.getlist('mosharekat_mablagh[]')
+
+        print("Record ID:", record_id)
+        print("Person Names:", person_names)
+        print("Saham Percents:", saham_percents)
+        print("Mosharekat Mablaghs:", mosharekat_mablaghs)
         
         # Delete existing records for the given id
         cursor.execute("DELETE FROM saham_info WHERE id = %s", (record_id,))
         conn.commit()
+
         # Insert updated records
         for person_name, saham_percent, mosharekat_mablagh in zip(person_names, saham_percents, mosharekat_mablaghs):
+            saham_percent = (float(mosharekat_mablagh) / mablagh_kol) * 100
+            saham_percent = "{:.2f}".format(saham_percent)
             cursor.execute("""
                 INSERT INTO saham_info (id, person_name, saham_percent, mosharekat_mablagh)
                 VALUES (%s, %s, %s, %s)
             """, (record_id, person_name, saham_percent, mosharekat_mablagh))
             conn.commit()
-        flash('saham info updated successfully!', 'success')
-        return render_template('sfirst_info.html')
+        
+        flash('Saham info updated successfully!', 'success')
+        return render_template('first_info.html')
     except IntegrityError as b:
         conn.rollback()
         flash(f"An error occurred: {b}", 'danger')
@@ -559,6 +569,7 @@ def save_saham_update():
         conn.rollback()
         flash(f"An error occurred: {e}", 'danger')
     return render_template('first_info.html')
+
 
 
 
