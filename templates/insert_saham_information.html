@@ -55,7 +55,7 @@
                     <a class="nav-link" href="http://localhost:5000/home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:5000/first_info/search_complete">back</a>
+                    <a class="nav-link" href="http://localhost:5000/first_info/search_for_saham">Back</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -66,6 +66,7 @@
     <div class="container mt-4">
         <form action="{{ url_for('save_saham_update') }}" method="post">
             <input type="hidden" name="record_id" value="{{ id }}">
+            <input type="hidden" name="mablagh_kol" value="{{ mablagh_kol }}">
             <div id="dynamic-form">
                 {% for row in saham_info %}
                 <div class="form-row">
@@ -75,7 +76,7 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="saham_percent">درصد سهام</label>
-                        <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" value="{{ row[1] }}" required>
+                        <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" value="{{ row[1] }}" readonly>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="mosharekat_mablagh">مبلغ مشارکت</label>
@@ -89,13 +90,13 @@
         </form>
     </div>
     <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js"></script>
     <script>
         jalaliDatepicker.startWatch();
-
+    
         document.getElementById('add-row').addEventListener('click', function() {
             var newRow = document.createElement('div');
             newRow.className = 'form-row';
@@ -106,7 +107,7 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label for="saham_percent">درصد سهام</label>
-                    <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" required>
+                    <input type="number" id="saham_percent" name="saham_percent[]" class="form-control" readonly>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="mosharekat_mablagh">مبلغ مشارکت</label>
@@ -115,6 +116,6 @@
             `;
             document.getElementById('dynamic-form').appendChild(newRow);
         });
-    </script>
+    </script>    
 </body>
 </html>

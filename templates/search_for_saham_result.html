@@ -91,6 +91,7 @@
                     <td>
                         <form class="update-form" action="{{ url_for('insert_saham_information') }}" method="post">
                             <input type="hidden" name="id" value="{{ row[14] }}">
+                            <input type="hidden" name="mablagh_kol" value="{{ row[11] }}">
                             <button type="submit" class="btn btn-primary btn-sm">Update</button>
                         </form>
                     </td>
