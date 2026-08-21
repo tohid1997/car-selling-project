@@ -1,5 +1,9 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session
-from app.database.connection import get_connection
+from app.services.auth_service import authenticate_user
+from app.services.auth_service import (
+    authenticate_user,
+    register_user
+)
 
 
 auth_bp = Blueprint("auth", __name__)
@@ -11,33 +15,17 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_connection()
+        user = authenticate_user(username, password)
 
-        try:
-            cursor = conn.cursor()
+        if user:
+            session.permanent = True
+            session["loggedin"] = True
+            session["username"] = user[1]
 
-            cursor.execute(
-                """
-                SELECT * FROM users
-                WHERE username = %s AND password = %s
-                """,
-                (username, password)
-            )
+            return redirect(url_for("main.home"))
 
-            user = cursor.fetchone()
-
-            if user:
-                session.permanent = True
-                session["loggedin"] = True
-                session["username"] = user[1]
-
-                return redirect(url_for("main.home"))
-
-            error = "نام کاربری یا رمز عبور شما اشتباه است!"
-            return render_template("login.html", error=error)
-
-        finally:
-            conn.close()
+        error = "نام کاربری یا رمز عبور شما اشتباه است!"
+        return render_template("login.html", error=error)
 
     return render_template("login.html")
 
@@ -58,23 +46,7 @@ def register():
             username = request.form["username"]
             password = request.form["password"]
 
-            conn = get_connection()
-
-            try:
-                cursor = conn.cursor()
-
-                cursor.execute(
-                    """
-                    INSERT INTO users (username, password)
-                    VALUES (%s, %s)
-                    """,
-                    (username, password)
-                )
-
-                conn.commit()
-
-            finally:
-                conn.close()
+            register_user(username, password)
 
             return redirect(url_for("main.home"))
 
